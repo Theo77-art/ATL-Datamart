@@ -49,6 +49,7 @@ def grab_last_mounth() -> None:
     base_url = "https://d37ci6vzurychx.cloudfront.net/trip-data/"
     destination_directory = "../../data/raw/"
 
+    # Get current date to download the last month 
     current_date = datetime.datetime.now()
     current_year = current_date.year
     current_month = current_date.month - 1
@@ -58,12 +59,12 @@ def grab_last_mounth() -> None:
     destination_path = destination_directory + filename
     file_url = base_url + filename
 
+    # Download the last month
     try: 
         urllib.request.urlretrieve(file_url, destination_path)
         print(f"Le fichier {filename} a été téléchargé avec succès.")
     except Exception as e:
         print(f"Erreur lors du téléchargement de {filename}: {str(e)}")
-
 
 
 def write_data_minio():
@@ -85,10 +86,12 @@ def write_data_minio():
     else:
         print("Bucket " + bucket + " existe déjà")
 
+    # Put all files into Minio
     directory = "../../data/raw/"
     for filename in os.listdir(directory):
         if filename.endswith(".parquet"):
             file_path = os.path.join(directory, filename)
+            # Convert as binary
             with open(file_path, 'rb') as file_data:
                 file_stat = os.stat(file_path)
                 client.put_object(
